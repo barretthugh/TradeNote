@@ -2,7 +2,7 @@ const vueApp = new Vue({
 
     components: {},
     el: '#vapp',
-    mixins: [tradesMixin, chartsCalMixin, addTradesMixin, entriesMixin, dailyMixin, videosMixin, notesMixin, dashboardMixin, addNoteMixin, playbookMixin, settingsMixin, journalslMixin, setupsMixin, forecastMixin],
+    mixins: [tradesMixin, chartsCalMixin, addTradesMixin, entriesMixin, dailyMixin, videosMixin, notesMixin, dashboardMixin, addNoteMixin, playbookMixin, settingsMixin, journalslMixin, setupsMixin, forecastMixin, brokersMixin],
     data() {
         return {
             cssTheme: "dark",
@@ -462,86 +462,86 @@ const vueApp = new Vue({
                 {
                     value: "thisWeek",
                     label: "This Week",
-                    start: Number(dayjs().tz("America/New_York").startOf('week').add(1, 'day').unix()), // we need to transform as number because later it's stringified and this becomes date format and note unix format
-                    end: Number(dayjs().tz("America/New_York").endOf('week').add(1, 'day').unix())
+                    start: Number(dayjs().tz(this.tradeTimeZone).startOf('week').add(1, 'day').unix()), // we need to transform as number because later it's stringified and this becomes date format and note unix format
+                    end: Number(dayjs().tz(this.tradeTimeZone).endOf('week').add(1, 'day').unix())
                 },
                 {
                     value: "lastWeek",
                     label: "Last Week",
-                    start: Number(dayjs().tz("America/New_York").startOf('week').add(1, 'day').subtract(1, 'week').unix()),
-                    end: Number(dayjs().tz("America/New_York").endOf('week').add(1, 'day').subtract(1, 'week').unix())
+                    start: Number(dayjs().tz(this.tradeTimeZone).startOf('week').add(1, 'day').subtract(1, 'week').unix()),
+                    end: Number(dayjs().tz(this.tradeTimeZone).endOf('week').add(1, 'day').subtract(1, 'week').unix())
                 },
                 {
                     value: "lastWeekTilNow",
                     label: "Last Week Until Now",
-                    start: Number(dayjs().tz("America/New_York").startOf('week').add(1, 'day').subtract(1, 'week').unix()),
-                    end: Number(dayjs().tz("America/New_York").endOf('week').add(1, 'day').unix())
+                    start: Number(dayjs().tz(this.tradeTimeZone).startOf('week').add(1, 'day').subtract(1, 'week').unix()),
+                    end: Number(dayjs().tz(this.tradeTimeZone).endOf('week').add(1, 'day').unix())
                 },
                 {
                     value: "lastTwoWeeks",
                     label: "Last Two Weeks",
-                    start: Number(dayjs().tz("America/New_York").startOf('week').add(1, 'day').subtract(2, 'week').unix()),
-                    end: Number(dayjs().tz("America/New_York").endOf('week').add(1, 'day').subtract(1, 'week').unix())
+                    start: Number(dayjs().tz(this.tradeTimeZone).startOf('week').add(1, 'day').subtract(2, 'week').unix()),
+                    end: Number(dayjs().tz(this.tradeTimeZone).endOf('week').add(1, 'day').subtract(1, 'week').unix())
                 },
                 {
                     value: "lastTwoWeeksTilNow",
                     label: "Last Two Weeks Until Now",
-                    start: Number(dayjs().tz("America/New_York").startOf('week').add(1, 'day').subtract(2, 'week').unix()),
-                    end: Number(dayjs().tz("America/New_York").endOf('week').add(1, 'day').unix())
+                    start: Number(dayjs().tz(this.tradeTimeZone).startOf('week').add(1, 'day').subtract(2, 'week').unix()),
+                    end: Number(dayjs().tz(this.tradeTimeZone).endOf('week').add(1, 'day').unix())
                 },
                 {
                     value: "thisMonth",
                     label: "This Month",
-                    start: Number(dayjs().tz("America/New_York").startOf('month').unix()),
-                    end: Number(dayjs().tz("America/New_York").endOf('month').unix())
+                    start: Number(dayjs().tz(this.tradeTimeZone).startOf('month').unix()),
+                    end: Number(dayjs().tz(this.tradeTimeZone).endOf('month').unix())
                 },
                 {
                     value: "lastMonth",
                     label: "Last Month",
-                    start: Number(dayjs().tz("America/New_York").startOf('month').subtract(1, 'month').unix()),
-                    end: Number(dayjs().tz("America/New_York").endOf('month').subtract(1, 'month').unix())
+                    start: Number(dayjs().tz(this.tradeTimeZone).startOf('month').subtract(1, 'month').unix()),
+                    end: Number(dayjs().tz(this.tradeTimeZone).endOf('month').subtract(1, 'month').unix())
                 },
                 {
                     value: "lastMonthTilNow",
                     label: "Last Month Until Now",
-                    start: Number(dayjs().tz("America/New_York").startOf('month').subtract(1, 'month').unix()),
-                    end: Number(dayjs().tz("America/New_York").endOf('month').unix())
+                    start: Number(dayjs().tz(this.tradeTimeZone).startOf('month').subtract(1, 'month').unix()),
+                    end: Number(dayjs().tz(this.tradeTimeZone).endOf('month').unix())
                 },
                 {
                     value: "lastTwoMonths",
                     label: "Last Two Months",
-                    start: Number(dayjs().tz("America/New_York").startOf('month').subtract(2, 'month').unix()),
-                    end: Number(dayjs().tz("America/New_York").endOf('month').subtract(1, 'month').unix())
+                    start: Number(dayjs().tz(this.tradeTimeZone).startOf('month').subtract(2, 'month').unix()),
+                    end: Number(dayjs().tz(this.tradeTimeZone).endOf('month').subtract(1, 'month').unix())
                 },
                 {
                     value: "lastTwoMonthsTilNow",
                     label: "Last Two Months Until Now",
-                    start: Number(dayjs().tz("America/New_York").startOf('month').subtract(2, 'month').unix()),
-                    end: Number(dayjs().tz("America/New_York").endOf('month').unix())
+                    start: Number(dayjs().tz(this.tradeTimeZone).startOf('month').subtract(2, 'month').unix()),
+                    end: Number(dayjs().tz(this.tradeTimeZone).endOf('month').unix())
                 },
                 {
                     value: "lastThreeMonths",
                     label: "Last Three Months",
-                    start: Number(dayjs().tz("America/New_York").startOf('month').subtract(3, 'month').unix()),
-                    end: Number(dayjs().tz("America/New_York").endOf('month').subtract(1, 'month').unix())
+                    start: Number(dayjs().tz(this.tradeTimeZone).startOf('month').subtract(3, 'month').unix()),
+                    end: Number(dayjs().tz(this.tradeTimeZone).endOf('month').subtract(1, 'month').unix())
                 },
                 {
                     value: "lastThreeMonthsTilNow",
                     label: "Last Three Months Until Now",
-                    start: Number(dayjs().tz("America/New_York").startOf('month').subtract(3, 'month').unix()),
-                    end: Number(dayjs().tz("America/New_York").endOf('month').unix())
+                    start: Number(dayjs().tz(this.tradeTimeZone).startOf('month').subtract(3, 'month').unix()),
+                    end: Number(dayjs().tz(this.tradeTimeZone).endOf('month').unix())
                 },
                 {
                     value: "thisYear",
                     label: "This Year",
-                    start: Number(dayjs().tz("America/New_York").startOf('year').unix()),
-                    end: Number(dayjs().tz("America/New_York").endOf('year').unix())
+                    start: Number(dayjs().tz(this.tradeTimeZone).startOf('year').unix()),
+                    end: Number(dayjs().tz(this.tradeTimeZone).endOf('year').unix())
                 },
                 {
                     value: "lastYear",
                     label: "Last Year",
-                    start: Number(dayjs().tz("America/New_York").startOf('year').subtract(1, 'year').unix()),
-                    end: Number(dayjs().tz("America/New_York").endOf('year').subtract(1, 'year').unix())
+                    start: Number(dayjs().tz(this.tradeTimeZone).startOf('year').subtract(1, 'year').unix()),
+                    end: Number(dayjs().tz(this.tradeTimeZone).endOf('year').subtract(1, 'year').unix())
                 },
                 {
                     value: "custom",
@@ -643,16 +643,6 @@ const vueApp = new Vue({
                 }
             ],
             daily: null,
-            brokers: [{
-                    value: "tradeZero",
-                    label: "TradeZero"
-                },
-                {
-                    value: "metaTrader",
-                    label: "MetaTrader"
-                }
-            ],
-            selectedBroker: localStorage.getItem('selectedBroker'),
 
             //Screenshots
             screenshots: [],
@@ -771,13 +761,18 @@ const vueApp = new Vue({
         !localStorage.getItem('selectedGrossNet') ? localStorage.setItem('selectedGrossNet', "gross") : '';
         !localStorage.getItem('selectedBroker') ? localStorage.setItem('selectedBroker', "tradeZero") : '';
 
-        let date = dayjs().tz("America/New_York").startOf("day").unix()
+        let date = dayjs().tz(this.tradeTimeZone).startOf("day").unix()
             //console.log("date "+date)
             //the hours is not correct. UTC time ?
 
     },
     created: async function() {
         this.initParse()
+        this.initPostHog()
+        if (this.currentUser && !this.currentUser.guidedTour) {
+            //console.log(" this.currentUser.guidedTour " + this.currentUser.guidedTour)
+            this.initShepherd()
+        }
 
         /* With selectedAccounts we are doing differently than with local storage variables in beforeCreate because we need to get the variable from currentUser. And checkCurrentUser cannot be done in beforeCreate */
         if (this.currentUser && this.currentUser.hasOwnProperty("accounts") && this.currentUser.accounts.length > 0) {
@@ -808,6 +803,7 @@ const vueApp = new Vue({
         //this.currentPage = document.getElementsByTagName("main")[0].id
 
         await this.initIndexedDB()
+
         if (this.currentPage.id == "dashboard" || this.currentPage.id == "calendar") {
             await this.getAllTrades(true)
             await this.initTab("dashboard")
@@ -817,7 +813,6 @@ const vueApp = new Vue({
             await this.getAllTrades(true)
             await this.initPopover()
             await this.initTab("daily")
-
         }
 
         if (this.currentPage.id == "journal") {
@@ -892,7 +887,7 @@ const vueApp = new Vue({
 
     },
 
-    mounted() {
+    mounted: async function() {
         /*console.log("\nDATE EXPLORATION")
         console.log(" -> Guessing timezone "+dayjs.tz.guess())
         //console.log(" -> Current date "+dayjs())
@@ -929,6 +924,7 @@ const vueApp = new Vue({
         var itemToEditId = sessionStorage.getItem('editItemId')
         if (this.currentPage.id == "addTrades") {
             this.initStepper()
+            await this.getExistingTradesArray()
         }
 
         this.tagArray()
@@ -988,18 +984,83 @@ const vueApp = new Vue({
         },
 
         /* ---- INITS ---- */
-        initTab(param) {
-            let showId
-            let showType
-            let showNumber
+        initPostHog() {
+            return new Promise((resolve, reject) => {
+                axios.post('/posthog')
+                    .then((response) => {
+                        //console.log(response);
+                        if (response.data != "off") {
+                            ! function(t, e) {
+                                var o,
+                                    n,
+                                    p,
+                                    r;
+                                e.__SV || (window.posthog = e, e._i = [], e.init = function(i, s, a) {
+                                    function g(t, e) {
+                                        var o = e.split(".");
+                                        2 == o.length && (t = t[o[0]], e = o[1]),
+                                            t[e] = function() {
+                                                t.push([e].concat(Array.prototype.slice.call(arguments, 0)))
+                                            }
+                                    }(p = t.createElement("script")).type = "text/javascript",
+                                        p.async = !0,
+                                        p.src = s.api_host + "/static/array.js",
+                                        (r = t.getElementsByTagName("script")[0])
+                                        .parentNode
+                                        .insertBefore(p, r);
+                                    var u = e;
+                                    for (
+                                        void 0 !== a ?
+                                        u = e[a] = [] :
+                                        a = "posthog",
+                                        u.people = u.people || [],
+                                        u.toString = function(t) {
+                                            var e = "posthog";
+                                            return "posthog" !== a && (e += "." + a),
+                                                t || (e += " (stub)"),
+                                                e
+                                        },
+                                        u.people.toString = function() {
+                                            return u.toString(1) + ".people (stub)"
+                                        },
+                                        o = "capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags".split(" "),
+                                        n = 0; n < o.length; n++)
+                                        g(u, o[n]);
+                                    e
+                                        ._i
+                                        .push([i, s, a])
+                                }, e.__SV = 1)
+                            }(document, window.posthog || []);
+                            posthog.init(response.data, { api_host: 'https://eu.posthog.com' })
+                        } else {
+                            console.log(" -> Analytics Off")
+                        }
+                        resolve()
+                    })
+                    .catch((error) => {
+                        console.log(" -> Error PostHog id " + error)
+                        reject(error)
+                    });
+            })
+        },
 
-            let hideId
-            let hideType
-            let hideNumber
+        initTab(param) {
+            let idCurrent
+            let idPrevious
+            let hideCurrentTab = false
+            let idCurrentType
+            let idCurrentNumber
+            let idPreviousType
+            let idPreviousNumber
+            let htmlIdCurrent
+            let htmlIdPrevious
+            let firstTimeClick
 
             var triggerTabList = [].slice.call(document.querySelectorAll('#nav-tab button'))
-            console.log("list " + triggerTabList)
             var self = this // this is needed or else could not call function inside eventlistener
+
+            console.log("INIT TAB for " + param)
+
             triggerTabList.forEach((triggerEl) => {
                 /*var tabTrigger = new bootstrap.Tab(triggerEl)
                 triggerEl.addEventListener('click', function(event) {
@@ -1009,6 +1070,7 @@ const vueApp = new Vue({
                 })*/
                 if (param == "dashboard") {
                     // GET TAB ID THAT IS CLICKED
+                    console.log(" -> triggerTabList Dashboard")
                     triggerEl.addEventListener('shown.bs.tab', (event) => {
                         //console.log("target " + event.target.getAttribute('id')) // newly activated tab
                         this.selectedDashTab = event.target.getAttribute('id')
@@ -1022,75 +1084,59 @@ const vueApp = new Vue({
                 if (param == "daily") {
                     // GET TAB ID THAT IS CLICKED
 
-
-                    /*triggerEl.addEventListener('show.bs.tab', (event) => {                        
-                        showId = event.target.getAttribute('id')
-                        showType = showId.split('-')[0]
-                        showNumber = showId.split('-')[1]
-                        //console.log(" clickedNav tab "+clickedNav)
-                    })
-                    
-                    triggerEl.addEventListener('hide.bs.tab', (event) => {
-                        console.log(" Hide id "+event.target.getAttribute('id'))
-                        //clickedTab = true
-                        id = event.target.getAttribute('id')
-                        type = id.split('-')[0]
-                        number = id.split('-')[1]
-                        //console.log(" clickedNav tab "+clickedNav)
-                    })*/
+                    //console.log(" -> triggerTabList Daily")
 
                     triggerEl.addEventListener('click', (event) => {
-                        console.log("1- hideId " + hideId)
-                        showId = event.target.getAttribute('id')
-                        showType = showId.split('-')[0]
-                        showNumber = showId.split('-')[1]
 
-                        if (showId != hideId && hideId != undefined) {
-                            //console.log(" -> Clicking on new tab New tab, with showId " + showId + ", hideId " + hideId)
-                            console.log(" --> Hiding previous tab content")
-                            hideType = hideId.split('-')[0]
-                            hideNumber = hideId.split('-')[1]
-                            $("#" + hideType + "Nav-" + hideNumber).removeClass('d-block')
-                            $("#" + hideType + "Nav-" + hideNumber).removeClass('d-none')
 
-                            hideId = showId
+                        if (idCurrent != undefined) idPrevious = idCurrent // in case it's not on page load and we already are clicking on tabs, then inform that the previsous clicked tab (wich is for the moment current) should now become previous
+                        
+                        idCurrent = event.target.getAttribute('id')
+                        
+                        if (idPrevious == undefined) {
+                            firstTimeClick = true
+                            idPrevious = idCurrent //on page load, first time we click
+                            hideCurrentTab = !hideCurrentTab // this is counter intuitive but because further down we toggle hidCurrentTab, i need to toggle here if its first time click on load or else down there it would be hide true the first time. So here we set true so that further down, on first time click on page load it becomes false
+
                         }
 
-                        if (showId != undefined && showId == hideId) {
-                            const elTab = document.querySelector("#" + showId);
-                            const elContent = document.querySelector("#" + showType + "Nav-" + showNumber);
+                        //console.log(" -> id Current: " + idCurrent + " and previous: " + idPrevious)
 
-                            if (elContent.classList.contains('d-none')) { //if is hidden -> Show
-                                $("#" + showType + "Nav-" + showNumber).addClass('d-block')
-                                $("#" + showType + "Nav-" + showNumber).removeClass('d-none')
-                                $("#" + showId).addClass('active')
-                            } else if (elContent.classList.contains('d-block')) { //if open -> Hide
-                                $("#" + showType + "Nav-" + showNumber).addClass('d-none')
-                                $("#" + showType + "Nav-" + showNumber).removeClass('d-block')
-                                $("#" + showId).removeClass('active')
-                            } else { //its a new tab click we add d-block
-                                $("#" + showType + "Nav-" + showNumber).addClass('d-block')
+                        idCurrentType = idCurrent.split('-')[0]
+                        idCurrentNumber = idCurrent.split('-')[1]
+                        idPreviousType = idPrevious.split('-')[0]
+                        idPreviousNumber = idPrevious.split('-')[1]
+                        htmlIdCurrent = "#" + idCurrentType + "Nav-" + idCurrentNumber
+                        htmlIdPrevious = "#" + idPreviousType + "Nav-" + idPreviousNumber
+
+                        if (idCurrent == idPrevious) {
+
+                            hideCurrentTab = !hideCurrentTab
+
+                            //console.log(" hide tab ? " + hideCurrentTab)
+
+
+
+                            if (hideCurrentTab) { //hide content
+
+                                $(htmlIdCurrent).removeClass('show')
+                                $(htmlIdCurrent).removeClass('active')
+                                $("#" + idCurrent).removeClass('active')
+                            } else { //show content
+                                $(htmlIdCurrent).addClass('show')
+                                $(htmlIdCurrent).addClass('active')
+                                $("#" + idCurrent).addClass('active')
                             }
-                            //console.log("3- hideId " + hideId)
+
+
+
+                        } else {
+                            hideCurrentTab = false
+                            // in this case, we have click on another tab so we need to "reset" the previsous tab 
+                            $(htmlIdPrevious).removeClass('show')
+                            $(htmlIdPrevious).removeClass('active')
+                            $("#" + idPrevious).removeClass('active')
                         }
-
-                        if (hideId == undefined) {
-                            console.log(" -> Clicking on new tab and hideId is undefined")
-                            hideId = showId
-                                //console.log("4- hideId " + hideId)
-                        }
-
-
-                        //console.log("showId " + showId + ", hideId " + hideId)
-                        //console.log("showId " + typeof showId)
-
-
-
-
-
-
-
-
 
                     })
                 }
@@ -1114,6 +1160,303 @@ const vueApp = new Vue({
                 if (parse_app_id != "") this.checkCurrentUser()
                 resolve()
             })
+        },
+        initShepherd() {
+            const tour = new Shepherd.Tour({
+                useModalOverlay: true,
+                defaultStepOptions: {
+                    classes: 'tour-guide',
+                    scrollTo: true,
+                    useModalOverlay: true,
+                    /*when: {
+                        show() {
+                            const currentStepElement = shepherd.currentStep.el;
+                            const header = currentStepElement.querySelector('.shepherd-header');
+                            const progress = document.createElement('span');
+                            progress.style['margin-right'] = '15px';
+                            progress.innerText = `${shepherd.steps.indexOf(shepherd.currentStep) + 1}/${shepherd.steps.length}`;
+                            header.insertBefore(progress, currentStepElement.querySelector('.shepherd-cancel-icon'));
+                        }
+                    }*/
+                }
+            });
+
+            tour.addSteps([{
+                    id: 'step1',
+                    text: 'Welcome onboard. This guided tutorial will show you how TradeNote works.',
+                    buttons: [{
+                        text: 'Exit',
+                        action: tour.complete,
+                        classes: 'exitButton'
+                    }, {
+                        text: 'Next',
+                        action: tour.next
+                    }]
+                }, {
+                    id: 'step2',
+                    text: "In the side menu, you can navigate all TradeNote pages.",
+                    attachTo: {
+                        element: '#step2',
+                        on: 'right-start'
+                    },
+                    buttons: [{
+                            text: 'Exit',
+                            action: tour.complete,
+                            classes: 'exitButton'
+                        },
+                        {
+                            text: 'Back',
+                            action: tour.back
+                        },
+                        {
+                            text: 'Next',
+                            action: tour.next
+                        }
+                    ],
+                    popperOptions: {
+                        modifiers: [{ name: 'offset', options: { offset: [0, 15] } }]
+                    }
+                },
+                {
+                    id: 'step3',
+                    text: 'The dashboard shows all your main metrics.',
+                    attachTo: {
+                        element: '#step3',
+                        on: 'right'
+                    },
+                    buttons: [{
+                            text: 'Exit',
+                            action: tour.complete,
+                            classes: 'exitButton'
+                        }, {
+                            text: 'Back',
+                            action: tour.back
+                        },
+                        {
+                            text: 'Next',
+                            action: tour.next
+                        }
+                    ]
+                },
+                {
+                    id: 'step4',
+                    text: 'Calendar displays a calendar view of your daily trades.',
+                    attachTo: {
+                        element: '#step4',
+                        on: 'right'
+                    },
+                    buttons: [{
+                            text: 'Exit',
+                            action: tour.complete,
+                            classes: 'exitButton'
+                        }, {
+                            text: 'Back',
+                            action: tour.back
+                        },
+                        {
+                            text: 'Next',
+                            action: tour.next
+                        }
+                    ]
+                },
+                {
+                    id: 'step5',
+                    text: '<p>Daily shows a detailed view of trades per day.</p><p>For each day, there is a tab where you can see your daily journal entry (see below), all your trades and a blotter of your trades per symbol.</p><p>For each trade, you can click on the line to add a note per trade, a pattern and a mistake. Currently, patterns and mistakes must be first added manually in the Parse Dashboard.</p>',
+                    attachTo: {
+                        element: '#step5',
+                        on: 'right'
+                    },
+                    buttons: [{
+                            text: 'Exit',
+                            action: tour.complete,
+                            classes: 'exitButton'
+                        }, {
+                            text: 'Back',
+                            action: tour.back
+                        },
+                        {
+                            text: 'Next',
+                            action: tour.next
+                        }
+                    ]
+                },
+                {
+                    id: 'step6',
+                    text: 'Journal is where you can see and edit your daily journals.',
+                    attachTo: {
+                        element: '#step6',
+                        on: 'right'
+                    },
+                    buttons: [{
+                            text: 'Exit',
+                            action: tour.complete,
+                            classes: 'exitButton'
+                        }, {
+                            text: 'Back',
+                            action: tour.back
+                        },
+                        {
+                            text: 'Next',
+                            action: tour.next
+                        }
+                    ],
+                    popperOptions: {
+                        modifiers: [{ name: 'offset', options: { offset: [0, 15] } }]
+                    }
+                },
+                {
+                    id: 'step7',
+                    text: 'Setups show all your screenshots of setups and entries.',
+                    attachTo: {
+                        element: '#step7',
+                        on: 'right'
+                    },
+                    buttons: [{
+                            text: 'Exit',
+                            action: tour.complete,
+                            classes: 'exitButton'
+                        }, {
+                            text: 'Back',
+                            action: tour.back
+                        },
+                        {
+                            text: 'Next',
+                            action: tour.next
+                        }
+                    ]
+                },
+                {
+                    id: 'step8',
+                    text: 'Playbook is where you can see and edit your (yearly) playbook.',
+                    attachTo: {
+                        element: '#step8',
+                        on: 'right'
+                    },
+                    buttons: [{
+                            text: 'Exit',
+                            action: tour.complete,
+                            classes: 'exitButton'
+                        }, {
+                            text: 'Back',
+                            action: tour.back
+                        },
+                        {
+                            text: 'Next',
+                            action: tour.next
+                        }
+                    ]
+                },
+                {
+                    id: 'step9',
+                    text: 'Forecast displays your estimated P&L (experimental feature).',
+                    attachTo: {
+                        element: '#step9',
+                        on: 'right'
+                    },
+                    buttons: [{
+                            text: 'Exit',
+                            action: tour.complete,
+                            classes: 'exitButton'
+                        }, {
+                            text: 'Back',
+                            action: tour.back
+                        },
+                        {
+                            text: 'Next',
+                            action: tour.next
+                        }
+                    ],
+                    popperOptions: {
+                        modifiers: [{ name: 'offset', options: { offset: [0, 15] } }]
+                    }
+                },
+                {
+                    id: 'step10',
+                    text: "<p>You can filter your trades per date, account, gross vs net (excluding or including fees and commissions) and position (long and/or short).</p><p>You can also decide to aggregate data per day, week or year.</p><p>On certain graphs, you can decide to see data as Average Profit Per Trade (APPT), Average Profit Per Share Per Trade (APPSPT) or as profit factor.</p><p><b>In order to see you trades, please make sure you have chosen the right date range and that you have chosen at least one account and position type.</b></p>",
+                    attachTo: {
+                        element: '#step10',
+                        on: 'bottom'
+                    },
+                    buttons: [{
+                            text: 'Exit',
+                            action: tour.complete,
+                            classes: 'exitButton'
+                        }, {
+                            text: 'Back',
+                            action: tour.back
+                        },
+                        {
+                            text: 'Next',
+                            action: tour.next
+                        }
+                    ],
+                    popperOptions: {
+                        modifiers: [{ name: 'offset', options: { offset: [0, 15] } }]
+                    }
+                },
+                {
+                    id: 'step11',
+                    text: "<p>Click here to add trades, journal entries, setups or playbooks.</p><p>Trades is used for importing trades from your Broker's csv or excel file.</p><p>Journal is where you can write your daily thoughts and progress.</p><p>Setups lets you add a screenshot of an interesting setup or of your entry (you need to add entry time in this case). In both cases, you can annotate the screenshot with drawings, notes and more.</p><p>Playbook is where you can write your (yearly) playbook.</p>",
+                    attachTo: {
+                        element: '#step11',
+                        on: 'bottom'
+                    },
+                    buttons: [{
+                            text: 'Exit',
+                            action: tour.complete,
+                            classes: 'exitButton'
+                        }, {
+                            text: 'Back',
+                            action: tour.back
+                        },
+                        {
+                            text: 'Next',
+                            action: tour.next
+                        }
+                    ],
+                    popperOptions: {
+                        modifiers: [{ name: 'offset', options: { offset: [0, 15] } }]
+                    }
+                },
+                {
+                    id: 'step12',
+                    text: "That's it. You are now ready to use TradeNote. You can come back to this tutorial at any time by clicking 'Tutorial' in the sub-menu here.",
+                    attachTo: {
+                        element: '#step12',
+                        on: 'bottom'
+                    },
+                    buttons: [{
+                            text: 'Back',
+                            action: tour.back
+                        },
+                        {
+                            text: 'Done',
+                            action: tour.complete
+                        }
+                    ]
+                }
+
+            ])
+
+            tour.start();
+
+            Shepherd.on("complete", async() => {
+                console.log("Tour complete")
+                const Object = Parse.Object.extend("User");
+                const query = new Parse.Query(Object);
+                query.equalTo("objectId", this.currentUser.objectId);
+                const results = await query.first();
+                if (results) {
+                    await results.set("guidedTour", true)
+                    results.save().then(() => {
+                        console.log(" -> Updated user")
+                    })
+                } else {
+                    console.log("  --> Could not find user. This is a problem")
+                }
+
+            })
+
         },
         initQuill(param) {
             console.log("param " + param)
@@ -1428,9 +1771,6 @@ const vueApp = new Vue({
         dateNumberFormat(param) {
             return Number(Math.trunc(param)) //we have to use /1000 and not unix because or else does not take into account tz
         },
-        /*dateFormat(param) {
-            return dayjs.unix(param).format("DD MMMM YYYY")
-        },*/
         dateCalFormat(param) {
             return dayjs.unix(param).tz(this.tradeTimeZone).format("YYYY-MM-DD")
         },

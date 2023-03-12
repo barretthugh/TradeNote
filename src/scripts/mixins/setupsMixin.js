@@ -38,6 +38,8 @@ const setupsMixin = {
                     label: "Entry"
                 }
             ],
+            setupsEntriesQueryLimit: 6,
+            setupsEntriesPagination: 0
         }
     },
 
@@ -46,20 +48,34 @@ const setupsMixin = {
             console.log("setup " + JSON.stringify(this.setup))
         }
     },
-
+    mounted: async function() {
+        window.addEventListener('scroll', () => {
+            //console.log(window.scrollY) //scrolled from top
+            //console.log(window.innerHeight) //visible part of screen
+            if (window.scrollY + window.innerHeight >=
+                document.documentElement.scrollHeight) {
+                console.log(" -> Load new images")
+                this.getSetupsEntries()
+            }
+        })
+    },
     methods: {
-        getSetupsEntries: async function(param) {
+        getSetupsEntries: async function() {
             return new Promise(async(resolve, reject) => {
                 console.log(" -> Getting Setups and entries");
+                console.log(" -> setupsEntriesPagination "+this.setupsEntriesPagination);
                 const Object = Parse.Object.extend("setupsEntries");
                 const query = new Parse.Query(Object);
                 query.equalTo("user", Parse.User.current());
                 query.descending("dateUnix");
-                query.limit(param ? param : 10000); // limit to at most 10 results
-                this.setups = []
+                query.limit(this.setupsEntriesQueryLimit);
+                query.skip(this.setupsEntriesPagination)
+                //this.setups = []
                 const results = await query.find();
-                this.setups = JSON.parse(JSON.stringify(results))
+                this.setups = this.setups.concat(JSON.parse(JSON.stringify(results)))
                     //console.log(" -> Setups " + JSON.stringify(this.setups))
+                this.setupsEntriesPagination = this.setupsEntriesPagination + this.setupsEntriesQueryLimit
+                console.log(" -> setupsEntriesPagination "+this.setupsEntriesPagination);
                 resolve()
             })
         },
@@ -144,8 +160,8 @@ const setupsMixin = {
             }
             this.setup.date = event
             console.log("setup date (local time, i.e. New York time) " + this.setup.date)
-            this.setup.dateUnix = dayjs.tz(this.setup.date, "America/New_York").unix()
-            console.log("unix " + dayjs.tz(this.setup.date, "America/New_York").unix()) // we SPECIFY that it's New york time
+            this.setup.dateUnix = dayjs.tz(this.setup.date, this.tradeTimeZone).unix()
+            console.log("unix " + dayjs.tz(this.setup.date, this.tradeTimeZone).unix()) // we SPECIFY that it's New york time
         },
 
         saveSetup: async function() {
@@ -159,7 +175,7 @@ const setupsMixin = {
             this.loadingSpinnerText = "Uploading setup ..."
 
             if (!this.editingSetup || (this.editingSetup && this.dateSetupEdited)) {
-                this.setup.dateUnix = dayjs.tz(this.setup.date, "America/New_York").unix()
+                this.setup.dateUnix = dayjs.tz(this.setup.date, this.tradeTimeZone).unix()
             }
             if (this.editingSetup && !this.dateSetupEdited) {
                 //we do nothing
@@ -225,7 +241,7 @@ const setupsMixin = {
                             results.set("annotatedBase64", this.setup.annotatedBase64)
                             results.set("maState", this.setup.maState)
                             if (this.dateSetupEdited) {
-                                results.set("date", new Date(dayjs.tz(this.setup.dateUnix, "America/New_York").format("YYYY-MM-DDTHH:mm:ss")))
+                                results.set("date", new Date(dayjs.tz(this.setup.dateUnix, this.tradeTimeZone).format("YYYY-MM-DDTHH:mm:ss")))
                                 results.set("dateUnix", Number(this.setup.dateUnix))
                             }
                             results.save().then(() => {
@@ -251,7 +267,7 @@ const setupsMixin = {
                                     object.set("originalBase64", this.setup.originalBase64)
                                     object.set("annotatedBase64", this.setup.annotatedBase64)
                                     object.set("maState", this.setup.maState)
-                                    object.set("date", new Date(dayjs.tz(this.setup.date, "America/New_York").format("YYYY-MM-DDTHH:mm:ss")))
+                                    object.set("date", new Date(dayjs.tz(this.setup.date, this.tradeTimeZone).format("YYYY-MM-DDTHH:mm:ss")))
                                     object.set("dateUnix", Number(this.setup.dateUnix))
 
                                     object.setACL(new Parse.ACL(Parse.User.current()));

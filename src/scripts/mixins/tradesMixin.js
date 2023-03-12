@@ -26,6 +26,7 @@ const tradesMixin = {
         },
 
         inputDateRangeCal(param1, param2) {
+            console.log("param1 "+param1+", param2 "+param2)
             let dateUnix = null
             if (param1 == "start") {
                 dateUnix = dayjs.tz(param2, this.tradeTimeZone).unix()
@@ -396,7 +397,7 @@ const tradesMixin = {
                     const query = new Parse.Query(Object)
                     query.equalTo("user", Parse.User.current());
                     query.ascending("dateUnix");
-                    query.exclude("executions", "blotter")
+                    query.exclude("executions") // we omit to make it lighter
                     query.limit(1000000); // limit to at most 10 results
                     const results = await query.find();
                     console.timeEnd("  --> Execution time");

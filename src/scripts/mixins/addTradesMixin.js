@@ -1,6 +1,7 @@
 const addTradesMixin = {
     data() {
         return {
+            gotExistingTradesArray: false,
             cashJournalsData: null,
             tradesData: null,
             tempExecutions: [],
@@ -27,6 +28,9 @@ const addTradesMixin = {
             this.selectedBroker = param
         },
 
+        /****************************
+         * CASH JOURNALS
+         ****************************/
         importCashJournals: async function(e) {
             console.log("IMPORTING CASH JOURNALS")
                 // Using Papa Parse : https://www.papaparse.com/docs
@@ -80,6 +84,7 @@ const addTradesMixin = {
                         console.log("key " + key)
                         let temp2 = {};
                         temp2.account = this.cashJournalsData[key].Account
+                        temp2.broker = this.selectedBroker
                         temp2.name = this.cashJournalsData[key].Name
                         temp2.currency = this.cashJournalsData[key].Currency
 
@@ -183,142 +188,102 @@ const addTradesMixin = {
                 //this.blotter = temp10
         },
 
+        /****************************
+         * TRADES
+         ****************************/
         importTrades: async function(e) {
-            console.log("IMPORTING CSV")
+            console.log("IMPORTING FILE")
                 // Using Papa Parse : https://www.papaparse.com/docs
             this.loadingSpinner = true
-            this.loadingSpinnerText = "Importing CSV(s) ..."
-            var files = e.target.files || e.dataTransfer.files;
-
-            if (!files.length)
-                return;
-
-            /*if (files[0].type != "text/csv") {
-                alert("Please upload a csv type file")
-                document.getElementById('tradesInput').value = null;
+            this.loadingSpinnerText = "Importing file ..."
+            let files = e.target.files || e.dataTransfer.files;
+            console.log(" got existing " + this.gotExistingTradesArray)
+            if (!files.length) {
                 this.loadingSpinner = false
-                return
-            }*/
-            if (this.selectedBroker == "tradeZero") {
-                let promise = new Promise((resolve, reject) => {
+                return;
+            }
+            if (!this.gotExistingTradesArray) {
+                this.loadingSpinner = false
+                alert("You loaded your file too quickly. Please refresh page, allow couple of seconds for background job to run and try again.")
+                return;
+            }
+
+            const readAsText = async(param) => {
+                return new Promise(async(resolve, reject) => {
                     var reader = new FileReader();
                     var vm = this;
                     reader.onload = e => {
-                        resolve((vm.fileinput = reader.result));
+                        resolve(reader.result)
                     };
-                    reader.readAsText(files[0]);
-                });
-
-                promise.then(async() => {
-
-
-                    let papaParse = Papa.parse(this.fileinput, { header: true })
-                        //we need to recreate the JSON with proper date format + we simplify
-                    this.tradesData = JSON.parse(JSON.stringify(papaParse.data))
-                    console.log("tradesData " + JSON.stringify(this.tradesData))
-
-                    await this.createTempExecutions()
-                    await this.createExecutions()
-                    await this.createTrades()
-                    await this.createBlotter()
-                    await this.filterExisting("trades")
-                    await this.createPnL()
-
+                    reader.readAsText(param[0]);
                 })
             }
-            if (this.selectedBroker == "metaTrader") {
-                console.log(" -> MetaTrader")
-                let promise = new Promise((resolve, reject) => {
-                    var reader = new FileReader();
-                    var vm = this;
+
+            const readAsArrayBuffer = async(param) => {
+                return new Promise(async(resolve, reject) => {
+                    let reader = new FileReader();
                     reader.onload = e => {
-                        resolve((vm.fileinput = reader.result));
+                        resolve(reader.result);
                     };
-                    reader.readAsArrayBuffer(files[0]);
-                });
-
-                promise.then(async() => {
-
-                    var workbook = XLSX.read(this.fileinput);
-                    var result = {};
-                    workbook.SheetNames.forEach(function(sheetName) {
-                        var roa = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-                        if (roa.length > 0) {
-                            result[sheetName] = roa;
-                        }
-                    });
-                    let accountKey = result[Object.keys(result)[0]].findIndex(item => item["Trade History Report"] == "Account:")
-                    console.log ("account key "+accountKey)
-                    let dealsKey = result[Object.keys(result)[0]].findIndex(item => item["Trade History Report"] == "Deals")
-                    console.log ("deals key "+dealsKey)
-
-                    let accountJson = result[Object.keys(result)[0]][accountKey] // doit it this way instead of naming keys in case key names change
-                    let account = [Object.values(accountJson)[1]][0].split(" ")[0]
-                        //console.log("Account "+JSON.stringify(account))
-
-                    let dealIterate = true
-                    this.tradesData = []
-                    for (let i = dealsKey + 2; dealIterate; i++) {
-                        let temp = {}
-                        let row = result[Object.keys(result)[0]][i]
-                        if (!row.hasOwnProperty("Trade History Report")) {
-                            dealIterate = false
-                        } else {
-                            //console.log("row "+JSON.stringify(row))
-                            //check for balance
-                            let checkBalance = Object.values(row)[2]
-                            if (checkBalance != "balance") {
-                                temp.Account = account
-                                let tempDate = Object.values(row)[0].split(" ")[0]
-                                let newDate = tempDate.split(".")[1] + "/" + tempDate.split(".")[2] + "/" + tempDate.split(".")[0]
-                                temp["T/D"] = newDate
-                                temp["S/D"] = newDate
-                                temp.Currency = "USD"
-                                temp.type = "0"
-                                if (Object.values(row)[3] == "buy" && Object.values(row)[4] == "in") {
-                                    temp.Side = "B"
-                                }
-                                if (Object.values(row)[3] == "buy" && Object.values(row)[4] == "out") {
-                                    temp.Side = "BC"
-                                }
-                                if (Object.values(row)[3] == "sell" && Object.values(row)[4] == "in") {
-                                    temp.Side = "SS"
-                                }
-                                if (Object.values(row)[3] == "sell" && Object.values(row)[4] == "out") {
-                                    temp.Side = "S"
-                                }
-                                temp.Symbol = Object.values(row)[2]
-                                temp.Qty = (Object.values(row)[5] * 100000).toString()
-                                temp.Price = Object.values(row)[6].toString()
-                                temp["Exec Time"] = Object.values(row)[0].split(" ")[1]
-                                temp.Comm = (-Object.values(row)[8]).toString()
-                                temp.SEC = (-Object.values(row)[9]).toString()
-                                temp.TAF = (-Object.values(row)[10]).toString()
-                                temp.NSCC = "0"
-                                temp.Nasdaq = "0"
-                                temp["ECN Remove"] = "0"
-                                temp["ECN Add"] = "0"
-                                temp["Gross Proceeds"] = Object.values(row)[11].toString()
-                                temp["Net Proceeds"] = (Object.values(row)[11] + Object.values(row)[8] + Object.values(row)[9] + Object.values(row)[10]).toString()
-                                temp["Clr Broker"] = ""
-                                temp.Liq = ""
-                                temp.Note = ""
-                                this.tradesData.push(temp)
-                            }
-                        }
-                    }
-                    console.log("trade data " + JSON.stringify(this.tradesData))
-
-                    await this.createTempExecutions()
-                    await this.createExecutions()
-                    await this.createTrades()
-                    await this.createBlotter()
-                    await this.filterExisting("trades")
-                    await this.createPnL()
-
+                    reader.readAsArrayBuffer(param[0]);
                 })
             }
 
+            const create = async() => {
+                await this.createTempExecutions()
+                await this.createExecutions()
+                await this.createTrades()
+                await this.createBlotter()
+                await this.filterExisting("trades")
+                await this.createPnL()
+            }
+
+            /****************************
+             * TRADEZERO
+             ****************************/
+            if (this.selectedBroker == "tradeZero" || this.selectedBroker == "template") {
+                console.log(" -> TradeZero / Template")
+                let fileInput = await readAsText(files)
+                await this.brokerTradeZero(fileInput)
+            }
+
+            /****************************
+             * METATRADER 5
+             ****************************/
+            if (this.selectedBroker == "metaTrader5") {
+                console.log(" -> MetaTrader 5")
+                let fileInput = await readAsArrayBuffer(files)
+                await this.brokerMetaTrader5(fileInput)
+            }
+
+            /****************************
+             * TD AMERITRADE
+             ****************************/
+            if (this.selectedBroker == "tdAmeritrade") {
+                console.log(" -> TD Ameritrade")
+                let fileInput = await readAsText(files)
+                await this.brokerTdAmeritrade(fileInput)
+            }
+
+            /****************************
+             * TRADESTATION
+             ****************************/
+            if (this.selectedBroker == "tradeStation") {
+                console.log(" -> Trade Station")
+                let fileInput = await readAsArrayBuffer(files)
+                await this.brokerTradeStation(fileInput)
+            }
+
+            /****************************
+             * INTERACTIVE BROKERS
+             ****************************/
+            if (this.selectedBroker == "interactiveBrokers") {
+                console.log(" -> Interactive Brokers")
+                let fileInput = await readAsText(files)
+                await this.brokerInteractiveBrokers(fileInput)
+            }
+
+            create()
         },
 
         createTempExecutions: async function() {
@@ -334,6 +299,7 @@ const addTradesMixin = {
                 for (const key of keys) {
                     let temp2 = {};
                     temp2.account = this.tradesData[key].Account
+                    temp2.broker = this.selectedBroker
                     if (!this.tradeAccounts.includes(this.tradesData[key].Account)) this.tradeAccounts.push(this.tradesData[key].Account)
                         /*usDate = dayjs.tz("07/22/2021 00:00:00", 'MM/DD/YYYY 00:00:00', "UTC")
                         //frDate = usDate.tz("Europe/Paris")
@@ -349,11 +315,11 @@ const addTradesMixin = {
                     temp2.currency = this.tradesData[key].Currency;
                     temp2.type = this.tradesData[key].Type;
                     temp2.side = this.tradesData[key].Side;
-                    temp2.symbol = this.tradesData[key].Symbol;
-                    temp2.quantity = parseInt(this.tradesData[key].Qty);
+                    temp2.symbol = this.tradesData[key].Symbol.replace(".", "_")
+                    temp2.quantity = parseFloat(this.tradesData[key].Qty);
                     temp2.price = parseFloat(this.tradesData[key].Price);
                     temp2.execTime = dayjs.tz(formatedDateTD + " " + this.tradesData[key]['Exec Time'], this.tradeTimeZone).unix()
-                    tempId = "e" + temp2.execTime + "_" + temp2.symbol + "_" + temp2.side;
+                    tempId = "e" + temp2.execTime + "_" + temp2.symbol.replace(".", "_") + "_" + temp2.side;
                     // It happens that two or more trades happen at the same (second) time. So we need to differentiated them
                     if (tempId != lastId) {
                         x = 1
@@ -401,7 +367,7 @@ const addTradesMixin = {
 
 
 
-                //console.log('executions ' + JSON.stringify(this.executions))
+                console.log('executions ' + JSON.stringify(this.executions))
                 console.log(" -> Created");
                 resolve()
             })
@@ -455,33 +421,34 @@ const addTradesMixin = {
                                 //console.log("   -> ID " + temp7.id)
                             newIds.push(temp7.id)
                             temp7.account = tempExec.account;
+                            temp7.broker = tempExec.broker
                             temp7.td = tempExec.td;
                             temp7.currency = tempExec.currency;
                             temp7.type = tempExec.type;
                             temp7.side = tempExec.side;
                             if (tempExec.side == "B") {
                                 temp7.strategy = "long"
-                                console.log("   -> Symbol " + key2 + " is bought and long")
+                                console.log("   --> Symbol " + key2 + " is bought and long")
                                 temp7.buyQuantity = tempExec.quantity;
                                 temp7.sellQuantity = 0
                             }
                             if (tempExec.side == "S") { //occasionnaly, Tradezero inverts trades and starts by accounting the sell even though it's a long possition
                                 temp7.strategy = "long"
                                     //console.log("Symbol " + key2 + " is sold and long")
-                                console.log("   -> Symbol " + key2 + " is accounted as sell before buy on date " + this.dateFormat(tempExec.td) + " at " + this.timeFormat(tempExec.execTime))
+                                console.log("   --> Symbol " + key2 + " is accounted as sell before buy on date " + this.chartFormat(tempExec.td) + " at " + this.timeFormat(tempExec.execTime))
                                 invertedLong = true
                                 temp7.buyQuantity = 0
                                 temp7.sellQuantity = tempExec.quantity;
                             }
                             if (tempExec.side == "SS") {
                                 temp7.strategy = "short"
-                                console.log("   -> Symbol " + key2 + " is sold and short")
+                                console.log("   --> Symbol " + key2 + " is sold and short")
                                 temp7.buyQuantity = 0
                                 temp7.sellQuantity = tempExec.quantity;
                             }
                             if (tempExec.side == "BC") { //occasionnaly, Tradezero invertes trades
                                 temp7.strategy = "short"
-                                console.log("   ->Symbol " + key2 + " is accounted as buy cover before short sell on date " + this.dateFormat(tempExec.td) + " at " + this.timeFormat(tempExec.execTime))
+                                console.log("   --> Symbol " + key2 + " is accounted as buy cover before short sell on date " + this.chartFormat(tempExec.td) + " at " + this.timeFormat(tempExec.execTime))
                                 invertedShort = true
                                 temp7.buyQuantity = tempExec.quantity;
                                 temp7.sellQuantity = 0
@@ -564,7 +531,7 @@ const addTradesMixin = {
                                 .id;
 
                         } else if (newTrade == false) { //= concatenating trade
-                            console.log(" -> Concatenating trade for symbole " + tempExec.symbol + " and strategy " + temp7.strategy)
+                            console.log("  --> Concatenating trade for symbol " + tempExec.symbol + " and strategy " + temp7.strategy)
                                 //console.log(" -> temp2 concat is " + JSON.stringify(temp2))
 
                             if (temp7.strategy == "long") {
@@ -626,7 +593,7 @@ const addTradesMixin = {
                                 .trade = temp7.id
 
                             if (temp7.buyQuantity == temp7.sellQuantity) { //When buy and sell quantities are equal means position is closed
-                                //console.log(" -> Closing position")
+                                console.log("   ---> Position CLOSED")
                                 temp7.exitPrice = tempExec.price;
                                 temp7.exitTime = tempExec.execTime;
                                 /*if (temp7.exitTime >= this.startTimeUnix) {
@@ -685,6 +652,8 @@ const addTradesMixin = {
                                     //console.log("temp2 is " + JSON.stringify(temp2))
                                     //console.log(" -> trade concat finished")
                                     //console.log(tradesCount+" trades for symbol "+key2)
+                            } else {
+                                console.log("   ---> Position OPEN")
                             }
                         } else {
                             console.log("nothing for key " + key2)
@@ -722,8 +691,12 @@ const addTradesMixin = {
                 console.log("\nFILTERING EXISTING")
                 this.loadingSpinnerText = "Filtering existing"
                     // We can only filter at this point because trades depend on executions. So, once trades are created, we can filter out existing trades
-                await this.getExistingTradesArray(param)
-                    //console.log("existing array "+JSON.stringify(this.existingTradesArray)+" and count "+this.existingTradesArray.length)
+
+                //await this.getExistingTradesArray(param) => Here, I no longer call it here but on page load, so it's quicker to load
+
+                //console.log("existing array "+JSON.stringify(this.existingTradesArray)+" and count "+this.existingTradesArray.length)
+                /* I have to rename and make specific caser for existingTradesArray => existingCashJournalsArray
+                
                 if (param == "cashJournals") {
                     this.existingTradesArray.forEach(element => {
                         if (this.cashJournals.hasOwnProperty(element)) {
@@ -733,7 +706,8 @@ const addTradesMixin = {
                     });
                     this.cashJournals = _.omit(this.cashJournals, this.existingTradesArray)
                     console.log("cashJournal " + JSON.stringify(this.cashJournals))
-                }
+                } */
+
                 if (param == "trades") {
                     this.existingTradesArray.forEach(element => {
                         if (this.executions.hasOwnProperty(element)) {
@@ -1162,18 +1136,22 @@ const addTradesMixin = {
             })
         },
 
-        getExistingTradesArray: async function(param) {
-
-            const Object = Parse.Object.extend(param);
-            const query = new Parse.Query(Object);
-            query.equalTo("user", Parse.User.current());
-            query.limit(1000000); // limit to at most 1M results
-            const results = await query.find();
-            for (let i = 0; i < results.length; i++) {
-                const object = results[i];
-                //console.log("unix time "+ object.get('dateUnix'));
-                this.existingTradesArray.push(object.get('dateUnix'))
-            }
+        getExistingTradesArray: async function() {
+            console.log(" -> Filtering existing trades")
+            return new Promise(async(resolve, reject) => {
+                const Object = Parse.Object.extend("trades");
+                const query = new Parse.Query(Object);
+                query.equalTo("user", Parse.User.current());
+                query.limit(1000000); // limit to at most 1M results
+                const results = await query.find();
+                for (let i = 0; i < results.length; i++) {
+                    const object = results[i];
+                    //console.log("unix time "+ object.get('dateUnix'));
+                    this.existingTradesArray.push(object.get('dateUnix'))
+                }
+                this.gotExistingTradesArray = true
+                console.log(" -> Finished filtering existing trades")
+            })
         },
 
         /* ---- 4: UPLOAD TO PARSE TRADES  ---- */
@@ -1290,7 +1268,7 @@ const addTradesMixin = {
                         let temp = {}
                         temp.value = this.tradeAccounts[0]
                         temp.label = this.tradeAccounts[0]
-                            tempArray.push(temp)
+                        tempArray.push(temp)
                         updateTradeAccounts(tempArray)
                     }
                 })
