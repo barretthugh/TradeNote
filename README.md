@@ -12,7 +12,7 @@ By creating and sharing TradeNote as an open source project, I hope to help othe
 ![dashboard](https://f003.backblazeb2.com/file/7ak-public/tradenote/TradeNote-Dashboard.png "Dashboard")
 
 ## Dicsussions and Feeback
-You can follow the project, get support and suggest new features on [Discord](https://discord.gg/ZbHekKYb85 "Discord").
+For support or feedback, feel free to join our [Discord](https://discord.gg/ZbHekKYb85 "Discord"), or create an issue on this repository.
 
 ## Built with
 The objective is to have a lightweight and fast website. As such, the website runs on static pages, using VueJs, JS and HTML and uses [Parse](https://parseplatform.org/ "Parse") for its backend.
@@ -28,32 +28,61 @@ Currently, you can add trades from the following brokers
  - TradeStation
  - Interactive Brokers
 
-Please look at the [brokers folder](https://github.com/Eleven-Trading/TradeNote/blob/main/brokers/ "brokers folder") to see the export format for you broker.
+Please look at the [brokers folder](https://github.com/Eleven-Trading/TradeNote/blob/main/brokers "brokers folder") to see the export format for you broker.
 
-Please contact me via [Discord](https://discord.gg/ZbHekKYb85 "Discord") if you wish to integrate your broker.
+You contact me via [Discord](https://discord.gg/ZbHekKYb85 "Discord") if you wish to integrate your broker.
 
 Alternatively, you can use the [template](https://github.com/Eleven-Trading/TradeNote/blob/main/brokers/Template.csv "template") and adapt it to your export file.
 
 ### Type of trades
-TradeNote works best for intraday stocks and forex trading. However, you can also import swing trades but you must make sure all imported trades are closed / that you do not have any open trades.
+TradeNote works best for intraday US stocks. However, you can also import swing trades but you must make sure all imported trades are closed / that you do not have any open trades.
+
+### Project
+You can see upcoming features and project development on the [project page](https://github.com/orgs/Eleven-Trading/projects/1 "Project").
 
 
-## Buy me coffee
-If you like this project, don't hesitate to show me <s>the money</s> love ;)
+If you like this project, <font size="5">please 🌟 this repository</font> and don't hesitate to show me <s>the money</s> love ;)
 <p><a href='https://ko-fi.com/eleven70433' target='_blank'><img height='35' style='margin-top:20px;border:0px;height:46px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a></p>
 
+
+
+
 # TradeNote
-TradeNote is divided in 3 sections, each being an essential building block for becoming a consistent trading and managing your trading business.
+TradeNote is divided in 2 sections, each being an essential building block for becoming a consistent trading and managing your trading business.
 
 ### Measure
 TradeNote offers a dashboard, daily view and calendar view so you can measure your progress. You can easily filter your trades by month or date range.
+
+#### Dashboard
+![dashboard](https://f003.backblazeb2.com/file/7ak-public/tradenote/TradeNote-Dashboard.png "Dashboard")
+
+#### Daily Page
+On daily page you can see your trades per day. You can add pattern, mistake and note to each of you trades. Moreover, you can specify your satisfaction with the trade (for example if you followed or not your rules) with thumbs up or down. 
+
+![Add Trade Information](https://f003.backblazeb2.com/file/7ak-public/tradenote/Capture%20d%E2%80%99%C3%A9cran%202023-03-26%20%C3%A0%2015.04.03.png "Add Trade Information")
+![Daily Page](https://f003.backblazeb2.com/file/7ak-public/tradenote/Capture%20d%E2%80%99%C3%A9cran%202023-03-26%20%C3%A0%2015.05.34.png "Daily Page")
 
 
 ### Reflect
 With TradeNote you can keep a daily diary of your trading journey to work on your trader psychology as well as add annotated screenshots of interesting setups or your entries. You can also write your (yearly) playbook.
 
-### Anticipate
-They say trading is like running a business so with TradeNote you can create a forecast so you can anticipate your P&L.
+#### Diary Page
+Besides notes for every trade, you can record things related to your every day trading, like feelings, moods and emotions or more technical related issues like patterns, in order to make important discoveries.  
+
+![Add Journal Entry](https://f003.backblazeb2.com/file/7ak-public/tradenote/Capture%20d%E2%80%99%C3%A9cran%202023-03-26%20%C3%A0%2015.08.41.png "Add Journal Entry")
+
+![Journal Page](https://f003.backblazeb2.com/file/7ak-public/tradenote/Capture%20d%E2%80%99%C3%A9cran%202023-03-26%20%C3%A0%2015.08.53.png "Journal Page")
+
+#### Screenshots Page
+Upload screenshots of you trades ("Entry" option) or simply an interesting setup you have identified ("Setup" option) and make annotations for further analysis.
+
+![Add Screenshot](https://f003.backblazeb2.com/file/7ak-public/tradenote/Capture%20d%E2%80%99%C3%A9cran%202023-03-26%20%C3%A0%2015.07.02.png "Add Screenshots")
+
+![Screenshots Page](https://f003.backblazeb2.com/file/7ak-public/tradenote/Capture%20d%E2%80%99%C3%A9cran%202023-03-26%20%C3%A0%2015.07.16.png "Screenshots Page")
+
+
+
+
 
 
 # Installation, Upgrade and Backup
@@ -73,40 +102,59 @@ docker pull mongo:latest
 ```
 #### 3_ Run MongoDB
 ```
-docker run -e MONGO_INITDB_ROOT_USERNAME=<MONGO_INITDB_ROOT_USERNAME> -e MONGO_INITDB_ROOT_PASSWORD=<MONGO_INITDB_ROOT_PASSWORD> -v mongo_data:/data/db -p 27017:27017 --name tradenote-mongo --net tradenote-net -d mongo:latest
+docker run -e MONGO_INITDB_ROOT_USERNAME=<mongo_initdb_root_username> -e MONGO_INITDB_ROOT_PASSWORD=<mongo_initdb_root_password> -v mongo_data:/data/db -p 27017:27017 --name tradenote-mongo --net tradenote-net -d mongo:latest
 ```
 Run the image with the following environment variables
-- <MONGO_INITDB_ROOT_USERNAME>: Username for authenticating to the MongoDB database.
-- <MONGO_INITDB_ROOT_PASSWORD>: Password for authenticating to the MongoDB database.
+- <mongo_initdb_root_username>: Username for authenticating to the MongoDB database.
+- <mongo_initdb_root_password>: Password for authenticating to the MongoDB database.
 
 ### TradeNote
-#### 1_ Pull image
+#### 1_ Pull image from DockerHub
 Pull image from [DockerHub](https://hub.docker.com/r/eleventrading/tradenote/tags "DockerHub")
+- Stable, production tags are simply identified by version number. Example 7.7.7. The community and myself do our best to test and limit bugs on stable versions but if you encounter any please let me know via GitHub issues or Discord. 
+- Development, beta or test tags are marked with an underscore and description. Example : 7.7.7_beta
 
 ```
 docker pull eleventrading/tradenote:<tag>
 ```
+Alternatively, you can [build the image](#build-image-locally) yourself 
 
 #### 2_ Run image
 ```
-docker run -e MONGO_URI=<MONGO_URI> -e APP_ID=<APP_ID> -e MASTER_KEY=<MASTER_KEY> -p 7777:7777 --name tradenote-app --net tradenote-net -d eleventrading/tradenote:<TAG>
+docker run -e MONGO_URL=<mongo_url> -e MONGO_PORT=<mongo_port> -e MONGO_USER=<mongo_user> -e MONGO_PASSWORD=<mongo_password> -e TRADENOTE_DATABASE=<tradenote_database> -e APP_ID=<app_id> -e MASTER_KEY=<master_key> -e TRADENOTE_PORT=<tradenote_port> -p <tradenote_port>:<tradenote_port> --name tradenote-app --net tradenote-net -d eleventrading/tradenote:<tag>
 ```
 Run the image with the following environment variables
-- <MONGO_URI>: URI to your mongo database, including database name. It must have the following structure: `mongodb://<mongo_user>:<mongo_password>@<mongo_url>:<mongo_port>/<tradenote_database>?authSource=admin`. 
-   - <mongo_url>: Enter one of the following information : 
-      - If you have followed the above MongoDB installation process and created a network (in the example tradenote-net), simply use the container name.
-      - If you have an existing MongoDB running on a local network, you can either connect it to the network by creating the network (`docker network create tradenote-net`) running `docker network connect tradenote-net <container_name>` and then use the container name or connect it using your MongoDB container IP (you can find it by running `docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <container_name>`)
-      - If you have an existing MongoDB on a remote network, simply use the remote IP address
-   - <tradenote_database>: You can use whatever name you like for your  tradenote database. 
-- <APP_ID>: Set a random string as application ID, which will be used to connect to the backend (no spaces)
-- <MASTER_KEY>: Set a random string as master key, which will be used to make root connections to the backend (no spaces)
-- < TAG >: Depends on the tag number pulled from [DockerHub](https://hub.docker.com/r/eleventrading/tradenote/tags "DockerHub")
+- mongo_url: Enter one of the following information : 
+   - If you have followed the above MongoDB installation process and created a network ("tradenote-net"), simply use the container name ("tradenote-mongo").
+   - If you have an existing MongoDB running on a local network, you can 
+      - either connect it to the network by creating the network (`docker network create tradenote-net`) running `docker network connect tradenote-net <container_name>` and then use the container name 
+      - or connect it using your MongoDB container IP (you can find it by running `docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <container_name>`)
+   - If you have an existing MongoDB on a remote network, simply use the remote IP address
+- mongo_port: The port number of your MongoDB.
+- mongo-user: The MongoDB user.
+- mongo_password: The MongoDB password.
+- tradenote_database: The TradeNote database name in the MongoDB. You can use whatever name you like. 
+- app_id: Set a random string as application ID, which will be used to connect to the backend (no spaces)
+- master_key: Set a random string as master key, which will be used to make root connections to the backend (no spaces)
+- tradenote_port: TradeNote port number, from which you wish to serve the website.
+- tag: Depends on the tag number pulled from [DockerHub](https://hub.docker.com/r/eleventrading/tradenote/tags "DockerHub")
 
 
-#### 3_ Register a user
-Visit `http://<your_server>:7777/register` to register a TradeNote user. Use any email and set a password
+#### 3_ First Steps
+1. Start by registering a user. Visit `http://<your_server>:<tradenote_port>/register` to register a TradeNote user. Use any email and set a password
+2. When you log in for the first time, you will see a step by step tutorial explaining how TradeNote works
+2. Import your trades. See the [brokers folder](https://github.com/Eleven-Trading/TradeNote/blob/main/brokers "brokers folder") for more information
 
 ### Side note
+#### Build image locally
+For advanced users, you can also build the TradeNote image locally, directly from GitHub repository.
+
+1. Pull from github
+2. cd into Tradenote directory 
+3. docker build -f docker/Dockerfile . -t tradenote:<tag>
+(replace <tag> with the number you wish / with latest tag number)
+4. Run the image (see previous section)
+
 #### Parse
 This project uses [Parse](https://github.com/parse-community "Parse") as its backend framework, for the following reasons: 
 1. Manage the authentification (flow)
@@ -148,9 +196,8 @@ For convenience, here is an example using [s3cmd](https://s3tools.org/s3cmd "s3c
 
 # Contribute
 I'm a trader and recreational developer. My days are very packed but I will do my best to answer your questions and update the code when needed. As such, do not hesitate to contact me if you would like to contribute and help improve this project. Things to work on and improve:
-- Add support to other trading platforms (currently, only TradeZero is supported)
+- Add support to other trading platforms
 - Currently, the code has only been tested for day trading and it would be interesting to add support for swing and multi-day trading
-- Clean and optimize code
 - Improve front end layout and develop new ideas
 - And more...
 

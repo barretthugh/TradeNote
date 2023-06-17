@@ -38,6 +38,12 @@
             },
             "guidedTour": {
                 "type": "Boolean"
+            },
+            "marketDataApiKey": {
+                "type": "String"
+            },
+            "timeZone": {
+                "type": "String"
             }
         },
         "classLevelPermissions": {
@@ -81,63 +87,6 @@
             },
             "case_insensitive_email": {
                 "email": 1
-            }
-        }
-    },
-    {
-        "className": "notes",
-        "fields": {
-            "objectId": {
-                "type": "String"
-            },
-            "createdAt": {
-                "type": "Date"
-            },
-            "updatedAt": {
-                "type": "Date"
-            },
-            "ACL": {
-                "type": "ACL"
-            },
-            "note": {
-                "type": "String",
-                "required": false
-            },
-            "user": {
-                "type": "Pointer",
-                "targetClass": "_User",
-                "required": false
-            }
-        },
-        "classLevelPermissions": {
-            "find": {
-                "*": true
-            },
-            "count": {
-                "*": true
-            },
-            "get": {
-                "*": true
-            },
-            "create": {
-                "*": true
-            },
-            "update": {
-                "*": true
-            },
-            "delete": {
-                "*": true
-            },
-            "addField": {
-                "*": true
-            },
-            "protectedFields": {
-                "*": []
-            }
-        },
-        "indexes": {
-            "_id_": {
-                "_id": 1
             }
         }
     },
@@ -208,6 +157,9 @@
                 "type": "Object"
             },
             "useMasterKey": {
+                "type": "Boolean"
+            },
+            "satisfaction": {
                 "type": "Boolean"
             }
         },
@@ -308,79 +260,6 @@
         }
     },
     {
-        "className": "videos",
-        "fields": {
-            "objectId": {
-                "type": "String"
-            },
-            "createdAt": {
-                "type": "Date"
-            },
-            "updatedAt": {
-                "type": "Date"
-            },
-            "ACL": {
-                "type": "ACL"
-            },
-            "video": {
-                "type": "String",
-                "required": false
-            },
-            "videoDate": {
-                "type": "Date",
-                "required": false
-            },
-            "videoDateUnix": {
-                "type": "Number",
-                "required": false
-            },
-            "videoName": {
-                "type": "String",
-                "required": false
-            },
-            "user": {
-                "type": "Pointer",
-                "targetClass": "_User",
-                "required": false
-            },
-            "tradeDateUnix": {
-                "type": "Number",
-                "required": false
-            }
-        },
-        "classLevelPermissions": {
-            "find": {
-                "*": true
-            },
-            "count": {
-                "*": true
-            },
-            "get": {
-                "*": true
-            },
-            "create": {
-                "*": true
-            },
-            "update": {
-                "*": true
-            },
-            "delete": {
-                "*": true
-            },
-            "addField": {
-                "*": true
-            },
-            "protectedFields": {
-                "*": []
-            }
-        },
-        "indexes": {
-            "_id_": {
-                "_id": 1
-            }
-        }
-    },
-    {
         "className": "patterns",
         "fields": {
             "objectId": {
@@ -427,6 +306,9 @@
             "order": {
                 "type": "Number",
                 "required": false
+            },
+            "active": {
+                "type": "Boolean"
             }
         },
         "classLevelPermissions": {
@@ -492,6 +374,9 @@
             "order": {
                 "type": "Number",
                 "required": false
+            },
+            "active": {
+                "type": "Boolean"
             }
         },
         "classLevelPermissions": {
@@ -660,7 +545,7 @@
         }
     },
     {
-        "className": "journals",
+        "className": "diaries",
         "fields": {
             "objectId": {
                 "type": "String"
@@ -802,7 +687,7 @@
         }
     },
     {
-        "className": "setupsEntries",
+        "className": "screenshots",
         "fields": {
             "objectId": {
                 "type": "String"
@@ -829,20 +714,16 @@
                 "type": "String",
                 "required": false
             },
-            "original": {
-                "type": "File",
-                "required": false
-            },
-            "annotated": {
-                "type": "File",
-                "required": false
-            },
             "originalBase64": {
                 "type": "String",
                 "required": false
             },
             "annotatedBase64": {
                 "type": "String",
+                "required": false
+            },
+            "markersOnly": {
+                "type": "Boolean",
                 "required": false
             },
             "maState": {
@@ -856,6 +737,9 @@
                 "type": "Date"
             },
             "dateUnix": {
+                "type": "Number"
+            },
+            "dateUnixDay": {
                 "type": "Number"
             }
         },
@@ -892,7 +776,7 @@
         }
     },
     {
-        "className": "patternsMistakes",
+        "className": "setups",
         "fields": {
             "objectId": {
                 "type": "String"
@@ -921,16 +805,148 @@
                 "targetClass": "mistakes",
                 "required": false
             },
-            "tradeUnixDate": {
-                "type": "Number",
-                "required": false
-            },
             "tradeId": {
                 "type": "String"
             },
             "note": {
                 "type": "String",
                 "required": false
+            },
+            "dateUnix": {
+                "type": "Number"
+            },
+            "dateUnixDay": {
+                "type": "Number"
+            }
+        },
+        "classLevelPermissions": {
+            "find": {
+                "*": true
+            },
+            "count": {
+                "*": true
+            },
+            "get": {
+                "*": true
+            },
+            "create": {
+                "*": true
+            },
+            "update": {
+                "*": true
+            },
+            "delete": {
+                "*": true
+            },
+            "addField": {
+                "*": true
+            },
+            "protectedFields": {
+                "*": []
+            }
+        },
+        "indexes": {
+            "_id_": {
+                "_id": 1
+            }
+        }
+    },
+    {
+        "className": "satisfactions",
+        "fields": {
+            "objectId": {
+                "type": "String"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "ACL": {
+                "type": "ACL"
+            },
+            "user": {
+                "type": "Pointer",
+                "targetClass": "_User",
+                "required": false
+            },
+            "dateUnix": {
+                "type": "Number"
+            },
+            "tradeId": {
+                "type": "String"
+            },
+            "satisfaction": {
+                "type": "Boolean"
+            }
+        },
+        "classLevelPermissions": {
+            "find": {
+                "*": true
+            },
+            "count": {
+                "*": true
+            },
+            "get": {
+                "*": true
+            },
+            "create": {
+                "*": true
+            },
+            "update": {
+                "*": true
+            },
+            "delete": {
+                "*": true
+            },
+            "addField": {
+                "*": true
+            },
+            "protectedFields": {
+                "*": []
+            }
+        },
+        "indexes": {
+            "_id_": {
+                "_id": 1
+            }
+        }
+    },
+    {
+        "className": "excursions",
+        "fields": {
+            "objectId": {
+                "type": "String"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "ACL": {
+                "type": "ACL"
+            },
+            "user": {
+                "type": "Pointer",
+                "targetClass": "_User",
+                "required": false
+            },
+            "dateUnix": {
+                "type": "Number"
+            },
+            "tradeId": {
+                "type": "String"
+            },
+            "stopLoss": {
+                "type": "Number"
+            },
+            "maePrice": {
+                "type": "Number"
+            },
+            "mfePrice": {
+                "type": "Number"
             }
         },
         "classLevelPermissions": {
